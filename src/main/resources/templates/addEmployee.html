@@ -7,15 +7,15 @@
           rel="stylesheet"
           integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
           crossorigin="anonymous">
-
 </head>
 <body>
+<br>
 <div class = "container">
     <div class = "row">
         <div class ="col-lg-6 col-md-6 col-sm-6 container justify-content-center card">
             <h1 class = "text-center"> Create New Employee </h1>
             <div class = "card-body">
-                <form th:action="@{/new}" th:object = "${employee}" method="POST">
+                <form th:action="@{/employee/new}" th:object = "${employee}" method="POST">
                     <div class ="form-group">
                         <label> Username </label>
                         <input type="text" field="*{username}" name = "username" placeholder="Username" class="form-control mb-4 col-4">

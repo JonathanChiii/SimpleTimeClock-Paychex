@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Result</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+          crossorigin="anonymous">
+</head>
+<body>
+
+<td>
+  <div>
+    <h1>Welcome, <span th:text = "${employee.username}"/> !</h1>
+    <h2>your unique id is <span th:text = "${employee.id}"/></h2>
+  </div>
+  <div>
+    <h3>You can sign in by click <a th:href = "@{/employee/login (id=${employee.id})}">here</a></h3>
+
+  </div>
+</td>
+</body>
+</html>
