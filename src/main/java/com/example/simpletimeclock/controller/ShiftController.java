@@ -1,8 +1,10 @@
 package com.example.simpletimeclock.controller;
 
+import com.example.simpletimeclock.dto.LoginRequest;
 import com.example.simpletimeclock.model.Break;
 import com.example.simpletimeclock.model.Employee;
 import com.example.simpletimeclock.model.Shift;
+import com.example.simpletimeclock.model.utility.BreakType;
 import com.example.simpletimeclock.model.utility.Status;
 import com.example.simpletimeclock.repository.BreakRepository;
 import com.example.simpletimeclock.repository.EmployeeRepository;
@@ -15,11 +17,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.Date;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Controller
 @RequestMapping("/index")
@@ -72,14 +76,13 @@ public class ShiftController {
 
     }
 
-    @GetMapping("/newshift")
+    @GetMapping("/startshift")
     public String startShift(HttpServletRequest request){
-        System.out.println("start a shift is working");
         Long id = Long.valueOf(request.getSession().getAttribute("id").toString());
         Employee employee = employeeRepository.getReferenceById(id);
         employee.setIsOnShift(Status.Active);
         employeeRepository.save(employee);
-        Shift shift = shiftRepository.findShiftByEmployeeAndIsActive(employee, Status.Inactive).orElse(new Shift());
+        Shift shift = new Shift();
         shift.setIsActive(Status.Active);
         shift.setEmployee(employee);
         shift.setStart(new Date());
@@ -89,5 +92,89 @@ public class ShiftController {
         return "redirect:/index";
     }
 
+    @GetMapping("/endshift")
+    public String endShift(HttpServletRequest request){
+        Long id = Long.valueOf(request.getSession().getAttribute("id").toString());
+        Employee employee = employeeRepository.getReferenceById(id);
+        employee.setIsOnShift(Status.Inactive);
+        employeeRepository.save(employee);
+        Shift shift = shiftRepository.findShiftByEmployeeAndIsActive(employee, Status.Active).orElse(new Shift());
+
+        // If current shift has active break, need to end the break first
+        if(shift.getIsOnBreak().equals(Status.Active)) {
+            Break theBreak = breakRepository.findBreakByShiftAndIsActive(shift, Status.Active).orElse(new Break());
+            theBreak.setIsActive(Status.Inactive);
+            theBreak.setEnd(new Date());
+            Double time = getDateDiff(theBreak.getStart(), theBreak.getEnd(), TimeUnit.MINUTES) / 60.0;
+            theBreak.setTotalHour(time);
+            breakRepository.save(theBreak);
+        }
+
+        shift.setIsActive(Status.Inactive);
+        shift.setEnd(new Date());
+        shiftRepository.save(shift);
+        logger.info("User "+ employee + " ended a shift.");
+        logger.info("Shift: " + shift.toString());
+        return "redirect:/index";
+    }
+
+    @GetMapping("/startbreak")
+    public String startBreak(@ModelAttribute("type") String status, HttpServletRequest request, Model model){
+        Long id = Long.valueOf(request.getSession().getAttribute("id").toString());
+        Employee employee = employeeRepository.getReferenceById(id);
+        if(employee.getIsOnShift().equals(Status.Inactive)){
+            model.addAttribute("error", "Unable to start a break on an inactive shift.");
+            logger.warn("Unable to start a break on an inactive shift. Employee: " + employee.toString());
+        }
+
+        Shift shift = shiftRepository.findShiftByEmployeeAndIsActive(employee, Status.Active).orElse(new Shift());
+        shift.setIsOnBreak(Status.Active);
+        shiftRepository.save(shift);
+        Break theBreak = new Break();
+        theBreak.setShift(shift);
+        if(status.equalsIgnoreCase("Lunch")){
+            theBreak.setType(BreakType.Lunch);
+        }
+        theBreak.setStart(new Date());
+        theBreak.setIsActive(Status.Active);
+        breakRepository.save(theBreak);
+        logger.info("User "+ employee + " started a break.");
+        logger.info("Shift: " + shift.toString());
+        logger.info("Break: " + theBreak.toString());
+        return "redirect:/index";
+    }
+
+    @GetMapping("/endbreak")
+    public String endBreak(HttpServletRequest request, Model model){
+        Long id = Long.valueOf(request.getSession().getAttribute("id").toString());
+        Employee employee = employeeRepository.getReferenceById(id);
+        if(employee.getIsOnShift().equals(Status.Inactive)){
+            model.addAttribute("error", "Unable to end a break on an inactive shift.");
+            logger.warn("Unable to end a break on an inactive shift. Employee: " + employee.getUsername());
+        }
+        Shift shift = shiftRepository.findShiftByEmployeeAndIsActive(employee, Status.Active).orElse(new Shift());
+        shift.setIsOnBreak(Status.Inactive);
+        shiftRepository.save(shift);
+        Break theBreak = breakRepository.findBreakByShiftAndIsActive(shift, Status.Active).orElse(new Break());
+        theBreak.setIsActive(Status.Inactive);
+        theBreak.setEnd(new Date());
+        breakRepository.save(theBreak);
+        logger.info("User "+ employee + " ended a break.");
+        logger.info("Shift: " + shift.toString());
+        logger.info("Break: " + theBreak.toString());
+        return "redirect:/index";
+    }
+
+    /**
+     * Get a diff between two dates
+     * @param date1 the oldest date
+     * @param date2 the newest date
+     * @param timeUnit the unit in which you want the diff
+     * @return the diff value, in the provided unit
+     */
+    public static long getDateDiff(Date date1, Date date2, TimeUnit timeUnit) {
+        long diffInMillies = date2.getTime() - date1.getTime();
+        return timeUnit.convert(diffInMillies,TimeUnit.MILLISECONDS);
+    }
 
 }

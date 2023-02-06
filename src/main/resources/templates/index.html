@@ -4,33 +4,66 @@
     <meta charset="UTF-8">
     <title>Time Clock</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
-        crossorigin="anonymous">
+          rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+          crossorigin="anonymous">
 </head>
 <body>
-    <h1>Time Clock Homepage</h1>
+<h1>Time Clock Homepage</h1>
 
+<div>
+    <h2>Welcome, <span th:text="${employee.username}"/>! </h2>
+    <h3>Current Time: <span th:text="${#dates.format(#dates.createNow(), 'dd MMM yyyy HH:mm')}"></span></h3>
     <div>
-        <h2>Welcome, <span th:text="${employee.username}"/>! </h2>
-        <h3>Current Time: <span th:text="${#dates.format(#dates.createNow(), 'dd MMM yyyy HH:mm')}" ></span></h3>
+
+        <div th:if="${employee.getIsOnShift() == T(com.example.simpletimeclock.model.utility.Status).Active}">
             <div>
+                <p> Your are currently on an active shift. This shift started at <span th:text="${shift.getStart()}"/></p>
+                <form th:action="@{/index/endshift}" method="GET">
+                    <div class="box-footer">
+                        <button type="submit" class="btn btn-primary">End shift</button>
+                    </div>
+                </form>
+            </div>
 
-                <div th:if="${employee.getIsOnShift() == T(com.example.simpletimeclock.model.utility.Status).Active}">
-                    <p> Your are currently on an active shift. This shift started at <span th:text = "${shift.getStart()}"/> </p>
-
-                </div>
-
-
-                <div th:unless="${employee.getIsOnShift() == T(com.example.simpletimeclock.model.utility.Status).Active}">
-                    <p>You are NOT on an active shift.</p>
-                    <form th:action="@{/index/newshift}"  method="GET">
-                        <div class = "box-footer">
-                            <button type="submit" class = "btn btn-primary">Start a new shift</button>
+            <div th:if="${shift.getIsOnBreak() == T(com.example.simpletimeclock.model.utility.Status).Inactive}" >
+                <p> You can start a break by click here. </p>
+                <form th:action="@{/index/startbreak}" method="GET">
+                    <div class ="form-group">
+                        <label> Break type </label>
+                        <select th:field="*{break.type}">
+                            <option th:value="${T(com.example.simpletimeclock.model.utility.BreakType).Break}" th:text="Break"></option>
+                            <option th:value="${T(com.example.simpletimeclock.model.utility.BreakType).Lunch}" th:text="Lunch"></option>
+                        </select>                    <div class="box-footer">
+                        <button type="submit" class="btn btn-primary">Start Break</button>
+                    </div>
+                </form>
+            </div>
+            <div th:unless="${shift.getIsOnBreak() == T(com.example.simpletimeclock.model.utility.Status).Inactive}">
+                <div>
+                    <p>You are currently on a break.</p>
+                    <form th:action="@{/index/endbreak}" method="GET">
+                        <div class="box-footer">
+                            <button type="submit" class="btn btn-primary">End break</button>
                         </div>
                     </form>
                 </div>
             </div>
+
+        </div>
+
+
+        <div th:unless="${employee.getIsOnShift() == T(com.example.simpletimeclock.model.utility.Status).Active}">
+            <div>
+                <p>You are NOT on an active shift.</p>
+                <form th:action="@{/index/startshift}" method="GET">
+                    <div class="box-footer">
+                        <button type="submit" class="btn btn-primary">Start a new shift</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
+</div>
 </body>
 </html>
