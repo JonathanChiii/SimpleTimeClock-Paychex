@@ -19,24 +19,25 @@ import java.util.Set;
 public class Shift {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    //@Transactional(IsolationLevel.TRANSACTION_REPEATABLE_READ)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id")
     private Employee employee;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
-    private Status status;
+    private Status isActive = Status.Inactive;
 
-    @CreationTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date clock_in;
-
-    private Date clock_out;
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private Status isOnBreak = Status.Inactive;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "shift")
     private Set<Break> breaks = new HashSet<>();
+
+    private Double totalHour = Double.valueOf(0);
+    private Date start;
+    private Date end;
 }

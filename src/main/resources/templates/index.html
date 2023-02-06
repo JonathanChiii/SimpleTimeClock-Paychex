@@ -13,8 +13,24 @@
 
     <div>
         <h2>Welcome, <span th:text="${employee.username}"/>! </h2>
-    <h2>Current Time</h2>
-    </div>
+        <h3>Current Time: <span th:text="${#dates.format(#dates.createNow(), 'dd MMM yyyy HH:mm')}" ></span></h3>
+            <div>
 
+                <div th:if="${employee.getIsOnShift() == T(com.example.simpletimeclock.model.utility.Status).Active}">
+                    <p> Your are currently on an active shift. This shift started at <span th:text = "${shift.getStart()}"/> </p>
+
+                </div>
+
+
+                <div th:unless="${employee.getIsOnShift() == T(com.example.simpletimeclock.model.utility.Status).Active}">
+                    <p>You are NOT on an active shift.</p>
+                    <form th:action="@{/index/newshift}"  method="GET">
+                        <div class = "box-footer">
+                            <button type="submit" class = "btn btn-primary">Start a new shift</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+    </div>
 </body>
 </html>

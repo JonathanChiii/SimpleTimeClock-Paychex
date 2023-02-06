@@ -6,7 +6,9 @@
 
 </head>
 <body>
-<h2>Something went wrong. Please go back to the <a th:href = "@{/employee/login}">login</a> page.</h2>
+<h1>Oops, something went wrong.</h1>
+<h3>The error message is: <span th:text = "*{error}" /> </h3>
+<p> Please go back to the <a th:href = "@{/employee/login}">login</a> page. </p>
 
 </body>
 </html>

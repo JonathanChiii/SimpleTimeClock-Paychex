@@ -11,10 +11,12 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class LoginRequest {
+public class SignupRequest {
     @NotBlank
-    private String id;
+    @Size(min = 10, max = 20)
+    private String username;
 
     @NotBlank
+    @Size(min = 10, max = 40)
     private String password;
 }

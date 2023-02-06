@@ -16,7 +16,7 @@ import java.util.Set;
 @AllArgsConstructor
 public class Employee {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     @Column(nullable = false)
     private String username;
@@ -29,7 +29,7 @@ public class Employee {
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
-    private Status isOnShift;
+    private Status isOnShift = Status.Inactive;
 
-    private Double totalHour;
+    private Double totalHour = Double.valueOf(0);
 }
