@@ -1,5 +1,6 @@
 package com.example.simpletimeclock.model;
 
+import com.example.simpletimeclock.model.utility.Status;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -25,6 +26,10 @@ public class Employee {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "employee")
     private Set<Shift> shifts = new HashSet<>();
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private Status isOnShift;
 
     private Double totalHour;
 }

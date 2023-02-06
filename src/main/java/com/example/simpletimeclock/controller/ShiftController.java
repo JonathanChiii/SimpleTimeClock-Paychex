@@ -17,4 +17,6 @@ public class ShiftController {
     public String index(){
         return "index";
     }
+
+
 }

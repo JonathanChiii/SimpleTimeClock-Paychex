@@ -17,8 +17,6 @@ import java.util.Optional;
 public class EmployeeController {
     @Autowired
     EmployeeRepository employeeRepository;
-    @Autowired
-    ShiftRepository shiftRepository;
     // Skipping the Service layer for simplicity purposes...
 
     @GetMapping("/new")
