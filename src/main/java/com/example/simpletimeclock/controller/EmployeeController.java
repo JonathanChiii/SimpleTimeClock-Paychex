@@ -5,6 +5,7 @@ import com.example.simpletimeclock.dto.SignupRequest;
 import com.example.simpletimeclock.model.Employee;
 import com.example.simpletimeclock.repository.EmployeeRepository;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,11 +33,11 @@ public class EmployeeController {
         return "signup";
     }
     @PostMapping("/new")
-    public String saveEmployee(@ModelAttribute("employee") SignupRequest employeeDTO, Model model){
+    public String saveEmployee(@ModelAttribute("employee") @Valid SignupRequest employeeDTO, Model model){
         String username = employeeDTO.getUsername();
         Optional<Employee> existingEmployee = employeeRepository.findByUsername(username);
         if(existingEmployee.isPresent()){
-            logger.info("Username: " + username + " is already taken.");
+            logger.warn("Username: " + username + " is already taken.");
             model.addAttribute("error", "Username: " + username + " is already taken.");
             return "error";
         }
@@ -69,11 +70,11 @@ public class EmployeeController {
         }
         Employee employee = employeeRepository.getReferenceById(id);
         if(employee == null || !employee.getPassword().equals(loginRequest.getPassword())){
-            logger.info("This ID" + loginRequest.getId() + "and password: " + loginRequest.getPassword() + " do not match any records.");
+            logger.info("ID: " + loginRequest.getId() + "and password: " + loginRequest.getPassword() + " do not match any records.");
             model.addAttribute("error", "This ID and password do not match any records.");
             return "error";
         }
-        // If Authentication is successful, create a Http Session
+        // If Authentication is successful, grant a Http Session to client
         @SuppressWarnings("unchecked")
         List<String> messages = (List<String>) request.getSession().getAttribute("MY_SESSION_MESSAGES");
         if (messages == null) {
@@ -82,8 +83,13 @@ public class EmployeeController {
         }
         request.getSession().setAttribute("id", employee.getId());
         request.getSession().setAttribute("username", employee.getUsername());
+        request.getSession().setAttribute("password", employee.getPassword());
         logger.info("Session user is: " + employee.toString());
         return "redirect:/index";
     }
-
+    @GetMapping("/logout")
+    public String logout(HttpServletRequest request){
+        request.getSession().invalidate();
+        return "redirect:/employee/login";
+    }
 }

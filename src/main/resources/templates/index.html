@@ -13,6 +13,13 @@
 
 <div>
     <h2>Welcome, <span th:text="${employee.username}"/>! </h2>
+    <div>
+        <form th:action="@{/employee/logout}" method="GET">
+            <div class="box-footer">
+                <button type="submit" class="btn btn-primary">Log out</button>
+            </div>
+        </form>
+    </div>
     <h3>Current Time: <span th:text="${#dates.format(#dates.createNow(), 'dd MMM yyyy HH:mm')}"></span></h3>
     <h3>You total hour is <span th:text="${employee.getTotalHours()}"/></h3>
     <p> (Total hour is updated after the shift ends.)</p>
