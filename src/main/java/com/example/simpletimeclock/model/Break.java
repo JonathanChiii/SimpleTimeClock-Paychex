@@ -36,5 +36,5 @@ public class Break {
     @Column
     private Date end;
     @Column
-    private Double totalHour = Double.valueOf(0);
+    private Double totalHours = Double.valueOf(0);
 }

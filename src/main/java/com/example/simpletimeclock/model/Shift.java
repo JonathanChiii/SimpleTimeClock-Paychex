@@ -37,7 +37,7 @@ public class Shift {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "shift")
     private Set<Break> breaks = new HashSet<>();
 
-    private Double totalHour = Double.valueOf(0);
+    private Double totalHours = Double.valueOf(0);
     private Date start;
     private Date end;
 }

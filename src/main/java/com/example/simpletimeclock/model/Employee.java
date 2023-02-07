@@ -31,5 +31,5 @@ public class Employee {
     @Column(length = 20)
     private Status isOnShift = Status.Inactive;
 
-    private Double totalHour = Double.valueOf(0);
+    private Double totalHours = Double.valueOf(0);
 }
