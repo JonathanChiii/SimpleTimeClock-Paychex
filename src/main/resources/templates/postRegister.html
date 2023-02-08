@@ -9,16 +9,14 @@
           crossorigin="anonymous">
 </head>
 <body>
+    <div class="alert alert-success" role="alert">
+        <h1>Welcome, <span th:text = "${employee.username}"/> !</h1>
+    </div>
 
-<td>
-  <div>
-    <h1>Welcome, <span th:text = "${employee.username}"/> !</h1>
-    <h2>your unique id is <span th:text = "${employee.id}"/></h2>
-  </div>
-  <div>
-    <h3>You can sign in by click <a th:href = "@{/employee/login (id=${employee.id})}">here</a></h3>
+    <div class="text-center">
+        <h3>Your unique ID is: <span th:text = "${employee.id}"/></h3>
+        <p>You can sign in by click <a th:href = "@{/employee/login (id=${employee.id})}">here</a></p>
+    </div>
 
-  </div>
-</td>
 </body>
 </html>
